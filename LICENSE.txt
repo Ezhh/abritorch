@@ -1,0 +1,7 @@
+
+
+Torch model: CC-BY 3.0 BlockMen, from the mod: https://github.com/BlockMen/torches
+
+Original torch textures from minetest_game/default
+
+Recoloured textures and edits by Shara RedCat
