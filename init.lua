@@ -36,7 +36,7 @@ for i in ipairs(colour_list) do
 			if not retval then
 				return itemstack
 			end
-			itemstack, retval = minetest.item_place(fakestack, placer, pointed_thing, dir)
+			itemstack, retval = minetest.item_place(fakestack, placer, pointed_thing, param2)
 			itemstack:set_name("abritorch:torch_"..colour)
 
 			return itemstack
