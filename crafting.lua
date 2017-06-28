@@ -25,4 +25,31 @@ if minetest.get_modpath("caverealms") then
 		})
 	end
 
+else
+	-- recipes when caverealms not present
+
+	local recipe_list = {
+		{"black", "black",}, {"blue", "blue",},
+		{"cyan", "cyan",}, {"green", "green",}, 
+		{"magenta", "magenta",}, {"orange", "orange",}, 
+		{"purple", "violet",}, {"red", "red",}, 
+		{"yellow", "yellow",}, {"white", "white",},
+	}
+
+	for _, item in pairs(recipe_list) do
+
+		local colour = item[1]
+		local ingredient = item[2]
+
+		minetest.register_craft({
+			output = "abritorch:torch_"..colour.." 4", 
+			recipe = {
+				{"default:torch", "", "default:torch" },
+				{"", "dye:"..ingredient, "" },
+				{"default:torch", "", "default:torch" },
+			}
+		})
+	end
+
+
 end
