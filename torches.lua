@@ -61,7 +61,7 @@ for i in ipairs(colour_list) do
 		sunlight_propagates = true,
 		walkable = false,
 		light_source = 13,
-		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1},
+		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1, abritorch=1},
 		drop = "abritorch:torch_"..colour,
 		selection_box = {
 			type = "wallmounted",
@@ -87,7 +87,7 @@ for i in ipairs(colour_list) do
 		sunlight_propagates = true,
 		walkable = false,
 		light_source = 13,
-		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1},
+		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1, abritorch=1},
 		drop = "abritorch:torch_"..colour,
 		selection_box = {
 			type = "wallmounted",
@@ -119,3 +119,32 @@ for i in ipairs(colour_list) do
 	})
 end
 
+if minetest.features.particlespawner_tweenable then
+	minetest.register_abm({
+		nodenames = { "group:abritorch" },
+		interval = 1,
+		chance = 1,
+		catch_up = false,
+		action = function(pos, node)
+			local color = node.name:split(":")[2]:split("_")[2]
+			if color=="frosted" then
+				color = "white"
+			end
+			minetest.add_particlespawner({
+				pos = { min = vector.add(pos, vector.new(-0.1, 0.45, -0.1)), max = vector.add(pos, vector.new(0.1, 0.5, 0.1)) },
+				vel = { min = vector.new(0, 0, 0), max = vector.new( 0, 0.15, 0) },
+				acc = { min = vector.new(0, 0.1, 0), max = vector.new(0, 0.3, 0) },
+				time = 1,
+				amount = 2,
+				exptime = 1,
+				collisiondetection = true,
+				collision_removal = true,
+				glow = 14,
+				texpool = {
+					{ name = "abritorch_spark.png", alpha_tween = { 1, 0 }, scale = 0.3 },
+					{ name = "abritorch_spark.png^[multiply:" .. color, alpha_tween = { 1, 0 }, scale = 0.5 },
+				}
+			})
+		end
+	})
+end
