@@ -20,6 +20,7 @@ for i in ipairs(colour_list) do
 		wield_scale = {x = 1, y = 1, z = 1 + 1/16},
 		groups = { torch = 1 },
 		liquids_pointable = false,
+		use_texture_alpha = "clip"
 		on_place = function(itemstack, placer, pointed_thing)
 			local above = pointed_thing.above
 			local under = pointed_thing.under
