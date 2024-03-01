@@ -1,9 +1,9 @@
 
 local colour_list = {
 	{"black", "Darkened",}, {"blue", "Blue",},
-	{"cyan", "Cyan",}, {"green", "Green",}, 
-	{"magenta", "Magenta",}, {"orange", "Orange",}, 
-	{"purple", "Purple",}, {"red", "Red",}, 
+	{"cyan", "Cyan",}, {"green", "Green",},
+	{"magenta", "Magenta",}, {"orange", "Orange",},
+	{"purple", "Purple",}, {"red", "Red",},
 	{"yellow", "Yellow",}, {"white", "Frosted",},
 }
 
@@ -18,7 +18,9 @@ for i in ipairs(colour_list) do
 		inventory_image = "abritorch_torch_on_floor_"..colour..".png",
 		wield_image = "abritorch_torch_on_floor_"..colour..".png",
 		wield_scale = {x = 1, y = 1, z = 1 + 1/16},
+		groups = { torch = 1 },
 		liquids_pointable = false,
+		use_texture_alpha = "clip",
 		on_place = function(itemstack, placer, pointed_thing)
 			local above = pointed_thing.above
 			local under = pointed_thing.under
@@ -27,7 +29,7 @@ for i in ipairs(colour_list) do
 				return itemstack
 			end
 			local fakestack = itemstack
-			local retval = false
+			local retval
 			if wdir <= 1 then
 				retval = fakestack:set_name("abritorch:floor_"..colour)
 			else
@@ -36,7 +38,7 @@ for i in ipairs(colour_list) do
 			if not retval then
 				return itemstack
 			end
-			itemstack, retval = minetest.item_place(fakestack, placer, pointed_thing, param2)
+			itemstack = minetest.item_place(fakestack, placer, pointed_thing)
 			itemstack:set_name("abritorch:torch_"..colour)
 
 			return itemstack
@@ -50,6 +52,7 @@ for i in ipairs(colour_list) do
 		wield_scale = {x = 1, y = 1, z = 1 + 1/16},
 		drawtype = "mesh",
 		mesh = "torch_floor.obj",
+		use_texture_alpha = "clip",
 		tiles = {
 			{
 				name = "abritorch_torch_on_floor_animated_"..colour..".png",
@@ -61,7 +64,8 @@ for i in ipairs(colour_list) do
 		sunlight_propagates = true,
 		walkable = false,
 		light_source = 13,
-		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1},
+		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1, abritorch=1},
+		is_ground_content = false,
 		drop = "abritorch:torch_"..colour,
 		selection_box = {
 			type = "wallmounted",
@@ -76,6 +80,7 @@ for i in ipairs(colour_list) do
 		wield_scale = {x = 1, y = 1, z = 1 + 1/16},
 		drawtype = "mesh",
 		mesh = "torch_wall.obj",
+		use_texture_alpha = "clip",
 		tiles = {
 			{
 			    name = "abritorch_torch_on_floor_animated_"..colour..".png",
@@ -87,7 +92,8 @@ for i in ipairs(colour_list) do
 		sunlight_propagates = true,
 		walkable = false,
 		light_source = 13,
-		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1},
+		groups = {choppy=2, dig_immediate=3, flammable=1, not_in_creative_inventory=1, attached_node=1, torch=1, abritorch=1},
+		is_ground_content = false,
 		drop = "abritorch:torch_"..colour,
 		selection_box = {
 			type = "wallmounted",
@@ -119,3 +125,32 @@ for i in ipairs(colour_list) do
 	})
 end
 
+if minetest.features.particlespawner_tweenable then
+	minetest.register_abm({
+		nodenames = { "group:abritorch" },
+		interval = 1,
+		chance = 1,
+		catch_up = false,
+		action = function(pos, node)
+			local color = node.name:split(":")[2]:split("_")[2]
+			if color=="frosted" then
+				color = "white"
+			end
+			minetest.add_particlespawner({
+				pos = { min = vector.add(pos, vector.new(-0.1, 0.45, -0.1)), max = vector.add(pos, vector.new(0.1, 0.5, 0.1)) },
+				vel = { min = vector.new(0, 0, 0), max = vector.new( 0, 0.15, 0) },
+				acc = { min = vector.new(0, 0.1, 0), max = vector.new(0, 0.3, 0) },
+				time = 1,
+				amount = 2,
+				exptime = 1,
+				collisiondetection = true,
+				collision_removal = true,
+				glow = 14,
+				texpool = {
+					{ name = "abritorch_spark.png", alpha_tween = { 1, 0 }, scale = 0.3 },
+					{ name = "abritorch_spark.png^[multiply:" .. color, alpha_tween = { 1, 0 }, scale = 0.5 },
+				}
+			})
+		end
+	})
+end
